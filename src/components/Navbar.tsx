@@ -3,6 +3,22 @@
 import { useState, useEffect } from "react";
 import { useBreakpoint } from "@/hooks/useBreakpoint";
 
+const navItems = [
+  { label: "About", href: "#about" },
+  { label: "Services", href: "#services" },
+  { label: "Portfolio", href: "#portfolio" },
+  { label: "Contact", href: "#contact" },
+];
+
+function scrollTo(href: string) {
+  const el = document.querySelector(href);
+  if (el) {
+    const offset = 68;
+    const top = el.getBoundingClientRect().top + window.scrollY - offset;
+    window.scrollTo({ top, behavior: "smooth" });
+  }
+}
+
 export default function Navbar() {
   const [active, setActive] = useState("About");
   const [menuOpen, setMenuOpen] = useState(false);
@@ -10,7 +26,21 @@ export default function Navbar() {
   const { isMobile } = useBreakpoint();
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20);
+    const onScroll = () => {
+      setScrolled(window.scrollY > 20);
+      // Update active based on scroll position
+      const sections = navItems.map((n) => ({
+        label: n.label,
+        el: document.querySelector(n.href),
+      }));
+      for (let i = sections.length - 1; i >= 0; i--) {
+        const s = sections[i];
+        if (s.el && s.el.getBoundingClientRect().top <= 120) {
+          setActive(s.label);
+          break;
+        }
+      }
+    };
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
@@ -59,12 +89,15 @@ export default function Navbar() {
               alignItems: "center",
             }}
           >
-            {["About", "Services"].map((item) => (
+            {navItems.slice(0, 2).map((item) => (
               <NavLink
-                key={item}
-                label={item}
-                active={active === item}
-                onClick={() => setActive(item)}
+                key={item.label}
+                label={item.label}
+                active={active === item.label}
+                onClick={() => {
+                  setActive(item.label);
+                  scrollTo(item.href);
+                }}
               />
             ))}
             <span
@@ -80,7 +113,9 @@ export default function Navbar() {
         )}
 
         {/* ── Centre monogram ── */}
-        <div
+        <button
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          aria-label="Back to top"
           style={{
             position: "relative",
             display: "flex",
@@ -88,6 +123,9 @@ export default function Navbar() {
             justifyContent: "center",
             padding: isMobile ? 0 : "0 44px",
             flexShrink: 0,
+            background: "none",
+            border: "none",
+            cursor: "pointer",
           }}
         >
           {!isMobile && (
@@ -127,7 +165,7 @@ export default function Navbar() {
           >
             HS
           </span>
-        </div>
+        </button>
 
         {/* ── Right links ── */}
         {!isMobile && (
@@ -143,12 +181,15 @@ export default function Navbar() {
                 flexShrink: 0,
               }}
             />
-            {["Portfolio", "Resume"].map((item) => (
+            {navItems.slice(2).map((item) => (
               <NavLink
-                key={item}
-                label={item}
-                active={active === item}
-                onClick={() => setActive(item)}
+                key={item.label}
+                label={item.label}
+                active={active === item.label}
+                onClick={() => {
+                  setActive(item.label);
+                  scrollTo(item.href);
+                }}
               />
             ))}
           </div>
@@ -178,13 +219,14 @@ export default function Navbar() {
                   backgroundColor: "#4a5a44",
                   borderRadius: 1,
                   display: "block",
-                  transition: "all 0.3s ease",
+                  transition:
+                    "transform 0.35s cubic-bezier(0.4,0,0.2,1), opacity 0.25s ease",
                   transform:
                     i === 0 && menuOpen
-                      ? "rotate(45deg) translateY(6.5px)"
+                      ? "translateY(6.5px) rotate(45deg)"
                       : i === 2 && menuOpen
-                        ? "rotate(-45deg) translateY(-6.5px)"
-                        : "none",
+                        ? "translateY(-6.5px) rotate(-45deg)"
+                        : "translateY(0) rotate(0deg)",
                   opacity: i === 1 && menuOpen ? 0 : 1,
                 }}
               />
@@ -194,7 +236,7 @@ export default function Navbar() {
       </div>
 
       {/* ── Mobile dropdown ── */}
-      {isMobile && menuOpen && (
+      {isMobile && (
         <div
           style={{
             position: "absolute",
@@ -204,27 +246,35 @@ export default function Navbar() {
             backgroundColor: "rgba(232,237,224,0.97)",
             backdropFilter: "blur(16px)",
             WebkitBackdropFilter: "blur(16px)",
-            borderBottom: "1px solid rgba(74,90,68,0.12)",
+            borderBottom: menuOpen ? "1px solid rgba(74,90,68,0.12)" : "none",
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
+            overflow: "hidden",
+            boxShadow: menuOpen ? "0 12px 32px rgba(74,90,68,0.1)" : "none",
+            // Animate open/close with maxHeight + opacity + translateY
+            maxHeight: menuOpen ? "320px" : "0px",
+            opacity: menuOpen ? 1 : 0,
+            transform: menuOpen ? "translateY(0)" : "translateY(-10px)",
+            pointerEvents: menuOpen ? "auto" : "none",
+            transition:
+              "max-height 0.4s cubic-bezier(0.4,0,0.2,1), opacity 0.3s ease, transform 0.35s cubic-bezier(0.4,0,0.2,1), box-shadow 0.3s ease",
             padding: "8px 0 16px",
-            animation: "fadeSlideIn 0.22s ease",
-            boxShadow: "0 12px 32px rgba(74,90,68,0.1)",
           }}
         >
-          {["About", "Services", "Portfolio", "Resume"].map((item) => (
+          {navItems.map((item, idx) => (
             <button
-              key={item}
+              key={item.label}
               onClick={() => {
-                setActive(item);
+                setActive(item.label);
                 setMenuOpen(false);
+                scrollTo(item.href);
               }}
               style={{
                 background: "none",
                 border: "none",
                 borderBottom:
-                  active === item
+                  active === item.label
                     ? "1px solid rgba(74,90,68,0.35)"
                     : "1px solid transparent",
                 cursor: "pointer",
@@ -236,11 +286,12 @@ export default function Navbar() {
                 padding: "13px 0",
                 width: "100%",
                 textAlign: "center",
-                opacity: active === item ? 1 : 0.65,
-                transition: "opacity 0.2s ease",
+                opacity: menuOpen ? (active === item.label ? 1 : 0.65) : 0,
+                transform: menuOpen ? "translateY(0)" : "translateY(-6px)",
+                transition: `opacity 0.28s ease ${menuOpen ? idx * 0.055 : 0}s, transform 0.32s ease ${menuOpen ? idx * 0.055 : 0}s`,
               }}
             >
-              {item}
+              {item.label}
             </button>
           ))}
         </div>

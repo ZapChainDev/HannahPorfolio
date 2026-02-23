@@ -143,6 +143,7 @@ export default function PackageRates() {
 
   return (
     <section
+      id="packages"
       ref={sectionRef}
       style={{
         backgroundColor: "#e8ede0",

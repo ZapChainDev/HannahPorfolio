@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <circle cx="32" cy="32" r="30" fill="#4a5a44"/>
+  <circle cx="32" cy="32" r="27" fill="none" stroke="#c5ccb0" stroke-width="0.8" stroke-dasharray="3 4"/>
+  <text
+    x="32" y="40"
+    font-family="Georgia, serif"
+    font-size="22"
+    font-weight="700"
+    letter-spacing="3"
+    fill="#f5f2ec"
+    text-anchor="middle"
+  >VH</text>
+</svg>

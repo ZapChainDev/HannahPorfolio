@@ -77,6 +77,7 @@ export default function AboutSection() {
 
   return (
     <section
+      id="about"
       ref={sectionRef}
       style={{
         backgroundColor: "#4a5a44",

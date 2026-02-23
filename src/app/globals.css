@@ -52,6 +52,15 @@ svg {
   height: auto;
 }
 
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
 /* Curved text animation */
 @keyframes spin-slow {
   from {

@@ -284,6 +284,7 @@ export default function ServicesSection() {
 
   return (
     <section
+      id="services"
       ref={sectionRef}
       style={{
         backgroundColor: "#e8ede0",
