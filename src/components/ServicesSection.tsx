@@ -228,41 +228,56 @@ export default function ServicesSection() {
           start: "top 80%",
           once: true,
         },
-        defaults: { ease: "power3.out" },
+        defaults: { ease: "power2.out" },
       });
 
+      // Header text slides from RIGHT
       tl.from(
         ".svc-eyebrow",
-        { y: 16, opacity: 0, duration: 0.55, immediateRender: false },
+        { x: 40, opacity: 0, duration: 1.0, immediateRender: false },
         0,
       )
         .from(
           ".svc-heading",
-          { y: 24, opacity: 0, duration: 0.65, immediateRender: false },
-          0.1,
+          { x: 40, opacity: 0, duration: 1.1, immediateRender: false },
+          0.18,
         )
         .from(
           ".svc-divider",
           {
             scaleX: 0,
             opacity: 0,
-            duration: 0.5,
+            duration: 0.85,
             transformOrigin: "center",
             immediateRender: false,
           },
-          0.22,
-        )
-        .from(
-          ".svc-card",
-          {
-            y: 40,
-            opacity: 0,
-            duration: 0.65,
-            stagger: 0.1,
-            immediateRender: false,
-          },
-          0.3,
+          0.34,
         );
+
+      // Cards alternate: even from LEFT, odd from RIGHT
+      gsap.utils.toArray<Element>(".svc-card").forEach((card, i) => {
+        tl.from(
+          card,
+          {
+            x: i % 2 === 0 ? -40 : 40,
+            opacity: 0,
+            duration: 1.0,
+            immediateRender: false,
+            ease: "power2.out",
+          },
+          0.45 + i * 0.13,
+        );
+      });
+
+      // Decorative shapes float continuously
+      gsap.to(".svc-shape", {
+        y: -16,
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut",
+        duration: 5,
+        stagger: 1.2,
+      });
     },
     { scope: sectionRef },
   );
@@ -286,6 +301,7 @@ export default function ServicesSection() {
     >
       {/* Faint decorative circle top-right */}
       <div
+        className="svc-shape"
         style={{
           position: "absolute",
           width: 420,
@@ -298,6 +314,7 @@ export default function ServicesSection() {
         }}
       />
       <div
+        className="svc-shape"
         style={{
           position: "absolute",
           width: 260,
@@ -311,6 +328,7 @@ export default function ServicesSection() {
       />
       {/* Faint circle bottom-left */}
       <div
+        className="svc-shape"
         style={{
           position: "absolute",
           width: 320,

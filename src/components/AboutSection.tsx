@@ -23,41 +23,54 @@ export default function AboutSection() {
           start: "top 82%",
           once: true,
         },
-        defaults: { ease: "power3.out" },
+        defaults: { ease: "power2.out" },
       });
 
+      // Photo slides in from LEFT
       tl.from(
-        ".about-greeting",
-        { y: 20, opacity: 0, duration: 0.6, immediateRender: false },
+        ".about-photo",
+        { x: -60, opacity: 0, duration: 1.4, immediateRender: false },
         0,
       )
+        // Text slides in from RIGHT
+        .from(
+          ".about-greeting",
+          { x: 45, opacity: 0, duration: 1.1, immediateRender: false },
+          0.25,
+        )
         .from(
           ".about-heading",
-          { y: 30, opacity: 0, duration: 0.75, immediateRender: false },
-          0.12,
+          { x: 45, opacity: 0, duration: 1.2, immediateRender: false },
+          0.42,
         )
         .from(
           ".about-body",
-          { y: 22, opacity: 0, duration: 0.7, immediateRender: false },
-          0.26,
+          { x: 45, opacity: 0, duration: 1.15, immediateRender: false },
+          0.58,
         )
-        .from(
-          ".about-photo",
-          { x: 60, opacity: 0, duration: 0.9, immediateRender: false },
-          0.1,
-        )
+        // Sparkles pop in
         .from(
           ".about-sparkle",
           {
             scale: 0,
             opacity: 0,
-            duration: 0.4,
-            ease: "back.out(3)",
-            stagger: 0.12,
+            duration: 0.65,
+            ease: "back.out(2.5)",
+            stagger: 0.18,
             immediateRender: false,
           },
-          0.45,
+          0.75,
         );
+
+      // Sparkles float continuously
+      gsap.to(".about-sparkle", {
+        y: -10,
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut",
+        duration: 2.8,
+        stagger: 0.6,
+      });
     },
     { scope: sectionRef },
   );
@@ -358,7 +371,7 @@ function ArcText({
         position: "absolute",
         left: creamLeft - 25,
         top: creamTop - 60,
-        zIndex: 20,
+        zIndex: 30,
         pointerEvents: "none",
       }}
       width={size}

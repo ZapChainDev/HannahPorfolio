@@ -588,18 +588,18 @@ export default function BrandsCarousel() {
       });
       tl.from(
         ".brands-heading",
-        { y: 22, opacity: 0, duration: 0.65, immediateRender: false },
+        { x: 40, opacity: 0, duration: 1.1, immediateRender: false },
         0,
       ).from(
         ".brands-logo",
         {
-          y: 28,
+          y: 24,
           opacity: 0,
-          duration: 0.5,
-          stagger: 0.08,
+          duration: 0.85,
+          stagger: 0.12,
           immediateRender: false,
         },
-        0.2,
+        0.3,
       );
     },
     { scope: sectionRef },

@@ -83,43 +83,60 @@ export default function PackageRates() {
         defaults: { ease: "power3.out" },
       });
 
+      // Header text slides from RIGHT
       tl.from(
         ".pkg-eyebrow",
-        { y: 16, opacity: 0, duration: 0.55, immediateRender: false },
+        { x: 40, opacity: 0, duration: 1.0, immediateRender: false },
         0,
       )
         .from(
           ".pkg-heading",
-          { y: 24, opacity: 0, duration: 0.65, immediateRender: false },
-          0.1,
+          { x: 40, opacity: 0, duration: 1.1, immediateRender: false },
+          0.18,
         )
         .from(
           ".pkg-divider",
           {
             scaleX: 0,
             opacity: 0,
-            duration: 0.5,
+            duration: 0.85,
             transformOrigin: "center",
             immediateRender: false,
           },
-          0.22,
-        )
-        .from(
-          ".pkg-card",
-          {
-            y: 44,
-            opacity: 0,
-            duration: 0.7,
-            stagger: 0.12,
-            immediateRender: false,
-          },
-          0.32,
-        )
-        .from(
-          ".pkg-footer",
-          { y: 16, opacity: 0, duration: 0.5, immediateRender: false },
-          0.72,
+          0.34,
         );
+
+      // Cards alternate: even from LEFT, odd from RIGHT
+      gsap.utils.toArray<Element>(".pkg-card").forEach((card, i) => {
+        tl.from(
+          card,
+          {
+            x: i % 2 === 0 ? -45 : 45,
+            opacity: 0,
+            duration: 1.05,
+            immediateRender: false,
+            ease: "power2.out",
+          },
+          0.45 + i * 0.15,
+        );
+      });
+
+      // Footer / CTA fades up
+      tl.from(
+        ".pkg-footer",
+        { y: 22, opacity: 0, duration: 0.9, immediateRender: false },
+        1.1,
+      );
+
+      // Decorative shapes float continuously
+      gsap.to(".pkg-shape", {
+        y: -18,
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut",
+        duration: 6,
+        stagger: 1.5,
+      });
     },
     { scope: sectionRef },
   );
@@ -143,6 +160,7 @@ export default function PackageRates() {
     >
       {/* Decorative background circles */}
       <div
+        className="pkg-shape"
         style={{
           position: "absolute",
           width: 500,
@@ -155,6 +173,7 @@ export default function PackageRates() {
         }}
       />
       <div
+        className="pkg-shape"
         style={{
           position: "absolute",
           width: 300,

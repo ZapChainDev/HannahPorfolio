@@ -4,10 +4,12 @@ import AboutSection from "@/components/AboutSection";
 import ServicesSection from "@/components/ServicesSection";
 import PackageRates from "@/components/PackageRates";
 import BrandsCarousel from "@/components/BrandsCarousel";
+import IntroOverlay from "@/components/IntroOverlay";
 
 export default function Home() {
   return (
     <main>
+      <IntroOverlay />
       <HeroSection />
       <ScrollingTextBanner />
       <AboutSection />
