@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useBreakpoint } from "@/hooks/useBreakpoint";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -190,17 +191,39 @@ export default function PortfolioSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const titleRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
+  // Refs for each scroll strip (rows on desktop, cols on mobile)
+  const stripRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [active, setActive] = useState("All");
   const [lightbox, setLightbox] = useState<string | null>(null);
+  const { isMobile } = useBreakpoint();
 
   const filtered =
     active === "All"
       ? allImages
       : allImages.filter((img) => img.category === active);
 
+  // ── Build strips ──────────────────────────────────────────────────────────
+  // Desktop: rows of 4 images each, scroll horizontally
+  // Mobile: 2 columns (even / odd), scroll vertically
+  const COLS = isMobile ? 2 : 4;
+  const rows: (typeof allImages)[] = [];
+  if (!isMobile) {
+    for (let i = 0; i < filtered.length; i += COLS) {
+      rows.push(filtered.slice(i, i + COLS));
+    }
+  }
+  const mobileCol0 = filtered.filter((_, i) => i % 2 === 0);
+  const mobileCol1 = filtered.filter((_, i) => i % 2 === 1);
+
   useGSAP(
     () => {
-      // Title line-wipe
+      // Kill old ScrollTriggers from previous renders
+      ScrollTrigger.getAll().forEach((st) => {
+        if (st.vars.id === "port-strip" || st.vars.id === "port-item-reveal")
+          st.kill();
+      });
+
+      // ── Title ────────────────────────────────────────────────────────────
       gsap.fromTo(
         ".port-title-line",
         { scaleX: 0 },
@@ -224,8 +247,6 @@ export default function PortfolioSection() {
           scrollTrigger: { trigger: titleRef.current, start: "top 88%" },
         },
       );
-
-      // Count badge
       gsap.fromTo(
         ".port-count",
         { opacity: 0, scale: 0.6 },
@@ -239,7 +260,50 @@ export default function PortfolioSection() {
         },
       );
 
-      // Grid items – clip-path corner reveals + stagger
+      // ── Scroll-parallax strips ───────────────────────────────────────────
+      const strips = stripRefs.current.filter(Boolean);
+      strips.forEach((strip, i) => {
+        if (!strip) return;
+        if (!isMobile) {
+          // Desktop: rows slide left / right while section scrolls through viewport
+          const dir = i % 2 === 0 ? -1 : 1;
+          gsap.fromTo(
+            strip,
+            { x: dir * 60 },
+            {
+              x: dir * -60,
+              ease: "none",
+              scrollTrigger: {
+                id: "port-strip",
+                trigger: gridRef.current,
+                start: "top bottom",
+                end: "bottom top",
+                scrub: 1.4,
+              },
+            },
+          );
+        } else {
+          // Mobile: columns slide up / down
+          const dir = i === 0 ? -1 : 1;
+          gsap.fromTo(
+            strip,
+            { y: dir * 50 },
+            {
+              y: dir * -50,
+              ease: "none",
+              scrollTrigger: {
+                id: "port-strip",
+                trigger: gridRef.current,
+                start: "top bottom",
+                end: "bottom top",
+                scrub: 1.4,
+              },
+            },
+          );
+        }
+      });
+
+      // ── Per-card clip-path reveal + idle float ───────────────────────────
       const items = gridRef.current?.querySelectorAll(".port-item");
       if (items) {
         items.forEach((item, i) => {
@@ -253,12 +317,15 @@ export default function PortfolioSection() {
               scale: 1,
               duration: 0.85,
               ease: "power3.out",
-              delay: i * 0.055,
-              scrollTrigger: { trigger: gridRef.current, start: "top 84%" },
+              delay: i * 0.045,
+              scrollTrigger: {
+                id: "port-item-reveal",
+                trigger: gridRef.current,
+                start: "top 84%",
+              },
             },
           );
 
-          // Idle float – each card bobs at a slightly different phase
           gsap.to(item, {
             y: i % 2 === 0 ? -6 : 6,
             duration: 2.2 + (i % 5) * 0.3,
@@ -268,63 +335,61 @@ export default function PortfolioSection() {
             delay: (i % 7) * 0.25,
           });
         });
-      }
 
-      // Wire up hover overlay via GSAP (handles CSS-in-JS cards)
-      const handleOver = (e: Event) => {
-        const card = e.currentTarget as HTMLElement;
-        const overlay = card.querySelector(
-          ".port-overlay",
-        ) as HTMLElement | null;
-        const catText = card.querySelector(
-          ".port-cat-text",
-        ) as HTMLElement | null;
-        const viewText = card.querySelector(
-          ".port-view-text",
-        ) as HTMLElement | null;
-        const brackets = card.querySelectorAll(".port-bracket");
-        const img = card.querySelector("img");
-        if (overlay) overlay.style.opacity = "1";
-        if (catText) catText.style.transform = "translateY(0)";
-        if (viewText) viewText.style.transform = "translateY(0)";
-        if (img)
-          gsap.to(img, { scale: 1.08, duration: 0.6, ease: "power2.out" });
-        brackets.forEach((b) => gsap.to(b, { opacity: 1, duration: 0.3 }));
-      };
-      const handleOut = (e: Event) => {
-        const card = e.currentTarget as HTMLElement;
-        const overlay = card.querySelector(
-          ".port-overlay",
-        ) as HTMLElement | null;
-        const catText = card.querySelector(
-          ".port-cat-text",
-        ) as HTMLElement | null;
-        const viewText = card.querySelector(
-          ".port-view-text",
-        ) as HTMLElement | null;
-        const brackets = card.querySelectorAll(".port-bracket");
-        const img = card.querySelector("img");
-        if (overlay) overlay.style.opacity = "0";
-        if (catText) catText.style.transform = "translateY(100%)";
-        if (viewText) viewText.style.transform = "translateY(100%)";
-        if (img)
-          gsap.to(img, { scale: 1, duration: 0.5, ease: "power2.inOut" });
-        brackets.forEach((b) => gsap.to(b, { opacity: 0, duration: 0.3 }));
-      };
-
-      items?.forEach((item) => {
-        item.addEventListener("mouseenter", handleOver);
-        item.addEventListener("mouseleave", handleOut);
-      });
-
-      return () => {
-        items?.forEach((item) => {
-          item.removeEventListener("mouseenter", handleOver);
-          item.removeEventListener("mouseleave", handleOut);
+        // Hover overlay wiring
+        const handleOver = (e: Event) => {
+          const card = e.currentTarget as HTMLElement;
+          const overlay = card.querySelector(
+            ".port-overlay",
+          ) as HTMLElement | null;
+          const catText = card.querySelector(
+            ".port-cat-text",
+          ) as HTMLElement | null;
+          const viewText = card.querySelector(
+            ".port-view-text",
+          ) as HTMLElement | null;
+          const brackets = card.querySelectorAll(".port-bracket");
+          const img = card.querySelector("img");
+          if (overlay) overlay.style.opacity = "1";
+          if (catText) catText.style.transform = "translateY(0)";
+          if (viewText) viewText.style.transform = "translateY(0)";
+          if (img)
+            gsap.to(img, { scale: 1.08, duration: 0.6, ease: "power2.out" });
+          brackets.forEach((b) => gsap.to(b, { opacity: 1, duration: 0.3 }));
+        };
+        const handleOut = (e: Event) => {
+          const card = e.currentTarget as HTMLElement;
+          const overlay = card.querySelector(
+            ".port-overlay",
+          ) as HTMLElement | null;
+          const catText = card.querySelector(
+            ".port-cat-text",
+          ) as HTMLElement | null;
+          const viewText = card.querySelector(
+            ".port-view-text",
+          ) as HTMLElement | null;
+          const brackets = card.querySelectorAll(".port-bracket");
+          const img = card.querySelector("img");
+          if (overlay) overlay.style.opacity = "0";
+          if (catText) catText.style.transform = "translateY(100%)";
+          if (viewText) viewText.style.transform = "translateY(100%)";
+          if (img)
+            gsap.to(img, { scale: 1, duration: 0.5, ease: "power2.inOut" });
+          brackets.forEach((b) => gsap.to(b, { opacity: 0, duration: 0.3 }));
+        };
+        items.forEach((item) => {
+          item.addEventListener("mouseenter", handleOver);
+          item.addEventListener("mouseleave", handleOut);
         });
-      };
+        return () => {
+          items.forEach((item) => {
+            item.removeEventListener("mouseenter", handleOver);
+            item.removeEventListener("mouseleave", handleOut);
+          });
+        };
+      }
     },
-    { scope: sectionRef, dependencies: [active] },
+    { scope: sectionRef, dependencies: [active, isMobile] },
   );
 
   return (
@@ -397,12 +462,72 @@ export default function PortfolioSection() {
       {/* ── GRID ── */}
       <div
         ref={gridRef}
-        className="port-grid px-6 md:px-10 lg:px-16 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4"
+        className="px-6 md:px-10 lg:px-16"
         style={{ perspective: "1200px" }}
       >
-        {filtered.map((img, i) => (
-          <PortCard key={img.id} img={img} index={i} onOpen={setLightbox} />
-        ))}
+        {isMobile ? (
+          /* ── Mobile: 2 independent columns that scroll in opposite Y directions ── */
+          <div className="flex gap-3">
+            {/* Column 0 – slides up */}
+            <div
+              className="flex-1 flex flex-col gap-3"
+              ref={(el) => {
+                stripRefs.current[0] = el;
+              }}
+            >
+              {mobileCol0.map((img, i) => (
+                <PortCard
+                  key={img.id}
+                  img={img}
+                  index={i * 2}
+                  onOpen={setLightbox}
+                />
+              ))}
+            </div>
+            {/* Column 1 – slides down */}
+            <div
+              className="flex-1 flex flex-col gap-3"
+              ref={(el) => {
+                stripRefs.current[1] = el;
+              }}
+            >
+              {mobileCol1.map((img, i) => (
+                <PortCard
+                  key={img.id}
+                  img={img}
+                  index={i * 2 + 1}
+                  onOpen={setLightbox}
+                />
+              ))}
+            </div>
+          </div>
+        ) : (
+          /* ── Desktop: rows that slide left / right alternately ── */
+          <div className="flex flex-col gap-4">
+            {rows.map((row, rowIdx) => (
+              <div
+                key={rowIdx}
+                ref={(el) => {
+                  stripRefs.current[rowIdx] = el;
+                }}
+                className="grid gap-4"
+                style={{
+                  gridTemplateColumns: `repeat(${COLS}, minmax(0,1fr))`,
+                  willChange: "transform",
+                }}
+              >
+                {row.map((img, i) => (
+                  <PortCard
+                    key={img.id}
+                    img={img}
+                    index={rowIdx * COLS + i}
+                    onOpen={setLightbox}
+                  />
+                ))}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* ── LIGHTBOX ── */}
