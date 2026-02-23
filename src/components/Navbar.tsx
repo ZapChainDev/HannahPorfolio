@@ -1,12 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useBreakpoint } from "@/hooks/useBreakpoint";
 
 export default function Navbar() {
   const [active, setActive] = useState("About");
   const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const { isMobile } = useBreakpoint();
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
     <nav
@@ -16,11 +23,19 @@ export default function Navbar() {
         left: 0,
         right: 0,
         zIndex: 100,
-        backgroundColor: "#4a5a44",
+        height: 68,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        height: 60,
+        backgroundColor: scrolled
+          ? "rgba(232,237,224,0.92)"
+          : "rgba(232,237,224,0.75)",
+        backdropFilter: "blur(16px)",
+        WebkitBackdropFilter: "blur(16px)",
+        borderBottom: scrolled
+          ? "1px solid rgba(74,90,68,0.16)"
+          : "1px solid rgba(74,90,68,0.09)",
+        transition: "background-color 0.35s ease, border-color 0.35s ease",
       }}
     >
       <div
@@ -28,20 +43,20 @@ export default function Navbar() {
           display: "flex",
           alignItems: "center",
           width: "100%",
-          maxWidth: 960,
+          maxWidth: 1100,
           justifyContent: isMobile ? "space-between" : "center",
-          padding: isMobile ? "0 20px" : "0 40px",
-          gap: 0,
+          padding: isMobile ? "0 24px" : "0 48px",
         }}
       >
-        {/* Left links — hidden on mobile */}
+        {/* ── Left links ── */}
         {!isMobile && (
           <div
             style={{
               display: "flex",
-              gap: 40,
+              gap: 44,
               flex: 1,
               justifyContent: "flex-end",
+              alignItems: "center",
             }}
           >
             {["About", "Services"].map((item) => (
@@ -52,28 +67,82 @@ export default function Navbar() {
                 onClick={() => setActive(item)}
               />
             ))}
+            <span
+              style={{
+                width: 1,
+                height: 22,
+                backgroundColor: "rgba(74,90,68,0.22)",
+                marginLeft: 8,
+                flexShrink: 0,
+              }}
+            />
           </div>
         )}
 
-        {/* Center monogram */}
+        {/* ── Centre monogram ── */}
         <div
           style={{
-            fontFamily: "Georgia, 'Times New Roman', serif",
-            fontSize: "1.75rem",
-            fontWeight: 700,
-            color: "#e8ede0",
-            letterSpacing: "0.08em",
-            userSelect: "none",
-            padding: isMobile ? "0" : "0 52px",
-            lineHeight: 1,
+            position: "relative",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: isMobile ? 0 : "0 44px",
+            flexShrink: 0,
           }}
         >
-          HS
+          {!isMobile && (
+            <span
+              style={{
+                position: "absolute",
+                width: 46,
+                height: 46,
+                borderRadius: "50%",
+                border: "1px solid rgba(74,90,68,0.22)",
+              }}
+            />
+          )}
+          {!isMobile && (
+            <span
+              style={{
+                position: "absolute",
+                width: 34,
+                height: 34,
+                borderRadius: "50%",
+                border: "1px solid rgba(74,90,68,0.12)",
+              }}
+            />
+          )}
+          <span
+            style={{
+              fontFamily: "Georgia, 'Times New Roman', serif",
+              fontSize: isMobile ? "1.5rem" : "1.25rem",
+              fontWeight: 700,
+              color: "#4a5a44",
+              letterSpacing: "0.12em",
+              userSelect: "none",
+              lineHeight: 1,
+              position: "relative",
+              zIndex: 1,
+            }}
+          >
+            HS
+          </span>
         </div>
 
-        {/* Right links — hidden on mobile */}
+        {/* ── Right links ── */}
         {!isMobile && (
-          <div style={{ display: "flex", gap: 40, flex: 1 }}>
+          <div
+            style={{ display: "flex", gap: 44, flex: 1, alignItems: "center" }}
+          >
+            <span
+              style={{
+                width: 1,
+                height: 22,
+                backgroundColor: "rgba(74,90,68,0.22)",
+                marginRight: 8,
+                flexShrink: 0,
+              }}
+            />
             {["Portfolio", "Resume"].map((item) => (
               <NavLink
                 key={item}
@@ -85,7 +154,7 @@ export default function Navbar() {
           </div>
         )}
 
-        {/* Hamburger — mobile only */}
+        {/* ── Hamburger ── */}
         {isMobile && (
           <button
             onClick={() => setMenuOpen(!menuOpen)}
@@ -100,59 +169,48 @@ export default function Navbar() {
               padding: 8,
             }}
           >
-            <span
-              style={{
-                width: 24,
-                height: 2,
-                backgroundColor: "#e8ede0",
-                borderRadius: 1,
-                transition: "all 0.3s ease",
-                transform: menuOpen ? "rotate(45deg) translateY(7px)" : "none",
-              }}
-            />
-            <span
-              style={{
-                width: 24,
-                height: 2,
-                backgroundColor: "#e8ede0",
-                borderRadius: 1,
-                transition: "all 0.3s ease",
-                opacity: menuOpen ? 0 : 1,
-              }}
-            />
-            <span
-              style={{
-                width: 24,
-                height: 2,
-                backgroundColor: "#e8ede0",
-                borderRadius: 1,
-                transition: "all 0.3s ease",
-                transform: menuOpen
-                  ? "rotate(-45deg) translateY(-7px)"
-                  : "none",
-              }}
-            />
+            {[0, 1, 2].map((i) => (
+              <span
+                key={i}
+                style={{
+                  width: 22,
+                  height: 1.5,
+                  backgroundColor: "#4a5a44",
+                  borderRadius: 1,
+                  display: "block",
+                  transition: "all 0.3s ease",
+                  transform:
+                    i === 0 && menuOpen
+                      ? "rotate(45deg) translateY(6.5px)"
+                      : i === 2 && menuOpen
+                        ? "rotate(-45deg) translateY(-6.5px)"
+                        : "none",
+                  opacity: i === 1 && menuOpen ? 0 : 1,
+                }}
+              />
+            ))}
           </button>
         )}
       </div>
 
-      {/* Mobile dropdown menu */}
+      {/* ── Mobile dropdown ── */}
       {isMobile && menuOpen && (
         <div
           style={{
             position: "absolute",
-            top: 60,
+            top: 68,
             left: 0,
             right: 0,
-            backgroundColor: "#4a5a44",
-            borderTop: "1px solid rgba(232,237,224,0.15)",
+            backgroundColor: "rgba(232,237,224,0.97)",
+            backdropFilter: "blur(16px)",
+            WebkitBackdropFilter: "blur(16px)",
+            borderBottom: "1px solid rgba(74,90,68,0.12)",
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            gap: 0,
-            padding: "12px 0",
-            animation: "fadeSlideIn 0.25s ease",
-            boxShadow: "0 8px 24px rgba(0,0,0,0.15)",
+            padding: "8px 0 16px",
+            animation: "fadeSlideIn 0.22s ease",
+            boxShadow: "0 12px 32px rgba(74,90,68,0.1)",
           }}
         >
           {["About", "Services", "Portfolio", "Resume"].map((item) => (
@@ -165,20 +223,20 @@ export default function Navbar() {
               style={{
                 background: "none",
                 border: "none",
-                cursor: "pointer",
-                color: "#e8ede0",
-                fontFamily: "Georgia, 'Times New Roman', serif",
-                fontSize: "0.85rem",
-                letterSpacing: "0.18em",
-                textTransform: "uppercase",
-                padding: "14px 0",
-                width: "100%",
-                textAlign: "center",
-                opacity: active === item ? 1 : 0.75,
                 borderBottom:
                   active === item
-                    ? "1.5px solid #8f9f84"
-                    : "1.5px solid transparent",
+                    ? "1px solid rgba(74,90,68,0.35)"
+                    : "1px solid transparent",
+                cursor: "pointer",
+                color: "#4a5a44",
+                fontFamily: "Georgia, 'Times New Roman', serif",
+                fontSize: "0.78rem",
+                letterSpacing: "0.2em",
+                textTransform: "uppercase",
+                padding: "13px 0",
+                width: "100%",
+                textAlign: "center",
+                opacity: active === item ? 1 : 0.65,
                 transition: "opacity 0.2s ease",
               }}
             >
@@ -210,20 +268,20 @@ function NavLink({
         background: "none",
         border: "none",
         cursor: "pointer",
-        color: "#e8ede0",
+        color: "#4a5a44",
         fontFamily: "Georgia, 'Times New Roman', serif",
-        fontSize: "0.8rem",
-        letterSpacing: "0.2em",
+        fontSize: "0.72rem",
+        letterSpacing: "0.22em",
         textTransform: "uppercase",
-        textDecoration: "none",
-        padding: "4px 0",
-        opacity: active || hovered ? 1 : 0.8,
-        transition: "opacity 0.25s ease",
+        padding: "4px 0 6px",
+        opacity: active || hovered ? 1 : 0.58,
+        transition: "opacity 0.22s ease",
         position: "relative",
         borderBottom: active
-          ? "1.5px solid #8f9f84"
-          : "1.5px solid transparent",
-        paddingBottom: 6,
+          ? "1px solid #8f9f84"
+          : hovered
+            ? "1px solid rgba(143,159,132,0.5)"
+            : "1px solid transparent",
       }}
     >
       {label}

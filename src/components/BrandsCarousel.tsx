@@ -2,6 +2,12 @@
 
 // ── NEW FILE ──
 const _unused = null;
+import { useRef } from "react";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 function BossBaeLogo() {
   return (
@@ -567,11 +573,41 @@ export default function BrandsCarousel() {
     <WillaLaneLogo key="wl" />,
     <SarahJonesLogo key="sj" />,
   ];
-  // Duplicate for seamless infinite loop
   const track = [...set, ...set];
+  const sectionRef = useRef<HTMLElement>(null);
+
+  useGSAP(
+    () => {
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top 85%",
+          once: true,
+        },
+        defaults: { ease: "power3.out" },
+      });
+      tl.from(
+        ".brands-heading",
+        { y: 22, opacity: 0, duration: 0.65, immediateRender: false },
+        0,
+      ).from(
+        ".brands-logo",
+        {
+          y: 28,
+          opacity: 0,
+          duration: 0.5,
+          stagger: 0.08,
+          immediateRender: false,
+        },
+        0.2,
+      );
+    },
+    { scope: sectionRef },
+  );
 
   return (
     <section
+      ref={sectionRef}
       style={{
         backgroundColor: "#f2f5ed",
         borderTop: "1px solid rgba(74,90,68,0.08)",
@@ -582,7 +618,10 @@ export default function BrandsCarousel() {
       }}
     >
       {/* Heading */}
-      <div style={{ textAlign: "center", marginBottom: 44 }}>
+      <div
+        className="brands-heading"
+        style={{ textAlign: "center", marginBottom: 44 }}
+      >
         <h2
           style={{
             fontFamily: "Georgia, 'Times New Roman', serif",
@@ -637,6 +676,7 @@ export default function BrandsCarousel() {
           {track.map((logo, i) => (
             <div
               key={i}
+              className="brands-logo"
               style={{
                 padding: "0 64px",
                 borderRight: "1px solid rgba(74,90,68,0.1)",
@@ -663,4 +703,4 @@ export default function BrandsCarousel() {
       </div>
     </section>
   );
-}
+}

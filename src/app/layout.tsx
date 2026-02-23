@@ -16,7 +16,9 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <Navbar />
-        <div style={{ paddingTop: 60 }}>{children}</div>
+        <div style={{ paddingTop: 68, overflowX: "hidden", width: "100%" }}>
+          {children}
+        </div>
       </body>
     </html>
   );

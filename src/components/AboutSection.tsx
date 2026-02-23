@@ -1,15 +1,70 @@
 "use client";
 
+import { useRef } from "react";
 import type { CSSProperties } from "react";
 import Image from "next/image";
 import { useBreakpoint } from "@/hooks/useBreakpoint";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 export default function AboutSection() {
   const { isMobile, isTablet, width } = useBreakpoint();
   const stacked = isMobile || isTablet;
+  const sectionRef = useRef<HTMLElement>(null);
+
+  useGSAP(
+    () => {
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top 82%",
+          once: true,
+        },
+        defaults: { ease: "power3.out" },
+      });
+
+      tl.from(
+        ".about-greeting",
+        { y: 20, opacity: 0, duration: 0.6, immediateRender: false },
+        0,
+      )
+        .from(
+          ".about-heading",
+          { y: 30, opacity: 0, duration: 0.75, immediateRender: false },
+          0.12,
+        )
+        .from(
+          ".about-body",
+          { y: 22, opacity: 0, duration: 0.7, immediateRender: false },
+          0.26,
+        )
+        .from(
+          ".about-photo",
+          { x: 60, opacity: 0, duration: 0.9, immediateRender: false },
+          0.1,
+        )
+        .from(
+          ".about-sparkle",
+          {
+            scale: 0,
+            opacity: 0,
+            duration: 0.4,
+            ease: "back.out(3)",
+            stagger: 0.12,
+            immediateRender: false,
+          },
+          0.45,
+        );
+    },
+    { scope: sectionRef },
+  );
 
   return (
     <section
+      ref={sectionRef}
       style={{
         backgroundColor: "#4a5a44",
         padding: stacked ? "60px 20px 0" : "80px 48px 0",
@@ -29,7 +84,9 @@ export default function AboutSection() {
         }}
       >
         <LeftContent stacked={stacked} />
-        <RightPhoto screenWidth={width} stacked={stacked} />
+        <div className="about-photo">
+          <RightPhoto screenWidth={width} stacked={stacked} />
+        </div>
       </div>
     </section>
   );
@@ -52,6 +109,7 @@ function LeftContent({ stacked }: { stacked: boolean }) {
     >
       {/* "Hi!" */}
       <p
+        className="about-greeting"
         style={{
           fontFamily: "Georgia, 'Times New Roman', serif",
           fontSize: "1.1rem",
@@ -66,6 +124,7 @@ function LeftContent({ stacked }: { stacked: boolean }) {
 
       {/* "I'm Hana" */}
       <h2
+        className="about-heading"
         style={{
           fontFamily: "Georgia, 'Times New Roman', serif",
           fontSize: "clamp(2.5rem, 5vw, 3.6rem)",
@@ -80,6 +139,7 @@ function LeftContent({ stacked }: { stacked: boolean }) {
 
       {/* Description paragraph */}
       <p
+        className="about-body"
         style={{
           fontFamily: "Georgia, 'Times New Roman', serif",
           fontSize: "0.95rem",
@@ -223,6 +283,7 @@ function RightPhoto({
 
       {/* ── 5. Sparkle stars — upper-right of arch ── */}
       <Sparkle
+        className="about-sparkle"
         style={{
           left: creamLeft + creamW - 40,
           top: creamTop + 20,
@@ -231,6 +292,7 @@ function RightPhoto({
         }}
       />
       <Sparkle
+        className="about-sparkle"
         style={{
           left: creamLeft + creamW - 15,
           top: creamTop + 10,
@@ -239,6 +301,7 @@ function RightPhoto({
         }}
       />
       <Sparkle
+        className="about-sparkle"
         style={{
           left: creamLeft + creamW + 2,
           top: creamTop + 42,
@@ -325,11 +388,18 @@ function ArcText({
 }
 
 /* ─── 4-point sparkle star (cream colored for dark bg) ─── */
-function Sparkle({ style }: { style: CSSProperties }) {
+function Sparkle({
+  style,
+  className,
+}: {
+  style: CSSProperties;
+  className?: string;
+}) {
   return (
     <svg
       viewBox="0 0 24 24"
       fill="#e8ede0"
+      className={className}
       style={{ position: "absolute", ...style }}
     >
       <path d="M12 0 L13.3 9.7 L24 12 L13.3 14.3 L12 24 L10.7 14.3 L0 12 L10.7 9.7 Z" />

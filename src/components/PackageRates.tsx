@@ -1,7 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useBreakpoint } from "@/hooks/useBreakpoint";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const packages = [
   {
@@ -65,9 +70,63 @@ const packages = [
 export default function PackageRates() {
   const { isMobile, isTablet } = useBreakpoint();
   const cols = isMobile ? 1 : isTablet ? 2 : 4;
+  const sectionRef = useRef<HTMLElement>(null);
+
+  useGSAP(
+    () => {
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top 80%",
+          once: true,
+        },
+        defaults: { ease: "power3.out" },
+      });
+
+      tl.from(
+        ".pkg-eyebrow",
+        { y: 16, opacity: 0, duration: 0.55, immediateRender: false },
+        0,
+      )
+        .from(
+          ".pkg-heading",
+          { y: 24, opacity: 0, duration: 0.65, immediateRender: false },
+          0.1,
+        )
+        .from(
+          ".pkg-divider",
+          {
+            scaleX: 0,
+            opacity: 0,
+            duration: 0.5,
+            transformOrigin: "center",
+            immediateRender: false,
+          },
+          0.22,
+        )
+        .from(
+          ".pkg-card",
+          {
+            y: 44,
+            opacity: 0,
+            duration: 0.7,
+            stagger: 0.12,
+            immediateRender: false,
+          },
+          0.32,
+        )
+        .from(
+          ".pkg-footer",
+          { y: 16, opacity: 0, duration: 0.5, immediateRender: false },
+          0.72,
+        );
+    },
+    { scope: sectionRef },
+  );
 
   return (
     <section
+      ref={sectionRef}
       style={{
         backgroundColor: "#e8ede0",
         padding: isMobile
@@ -111,6 +170,7 @@ export default function PackageRates() {
       {/* Section header */}
       <div style={{ textAlign: "center", marginBottom: 16 }}>
         <p
+          className="pkg-eyebrow"
           style={{
             fontFamily: "Georgia, 'Times New Roman', serif",
             fontSize: "0.75rem",
@@ -123,6 +183,7 @@ export default function PackageRates() {
           Investment
         </p>
         <h2
+          className="pkg-heading"
           style={{
             fontFamily: "Georgia, 'Times New Roman', serif",
             fontSize: "clamp(2.2rem, 4vw, 3.2rem)",
@@ -138,6 +199,7 @@ export default function PackageRates() {
 
       {/* Diamond divider */}
       <div
+        className="pkg-divider"
         style={{
           display: "flex",
           alignItems: "center",
@@ -183,12 +245,13 @@ export default function PackageRates() {
         }}
       >
         {packages.map((pkg, i) => (
-          <PackageCard key={i} pkg={pkg} />
+          <PackageCard key={i} pkg={pkg} className="pkg-card" />
         ))}
       </div>
 
       {/* Footer note */}
       <p
+        className="pkg-footer"
         style={{
           marginTop: 52,
           fontFamily: "Georgia, 'Times New Roman', serif",
@@ -205,12 +268,19 @@ export default function PackageRates() {
   );
 }
 
-function PackageCard({ pkg }: { pkg: (typeof packages)[0] }) {
+function PackageCard({
+  pkg,
+  className,
+}: {
+  pkg: (typeof packages)[0];
+  className?: string;
+}) {
   const [hovered, setHovered] = useState(false);
   const active = hovered || pkg.featured;
 
   return (
     <div
+      className={className}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{

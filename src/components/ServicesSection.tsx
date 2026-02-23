@@ -1,7 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useBreakpoint } from "@/hooks/useBreakpoint";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const services = [
   {
@@ -213,9 +218,58 @@ const services = [
 export default function ServicesSection() {
   const { isMobile, isTablet } = useBreakpoint();
   const cols = isMobile ? 1 : isTablet ? 2 : 3;
+  const sectionRef = useRef<HTMLElement>(null);
+
+  useGSAP(
+    () => {
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top 80%",
+          once: true,
+        },
+        defaults: { ease: "power3.out" },
+      });
+
+      tl.from(
+        ".svc-eyebrow",
+        { y: 16, opacity: 0, duration: 0.55, immediateRender: false },
+        0,
+      )
+        .from(
+          ".svc-heading",
+          { y: 24, opacity: 0, duration: 0.65, immediateRender: false },
+          0.1,
+        )
+        .from(
+          ".svc-divider",
+          {
+            scaleX: 0,
+            opacity: 0,
+            duration: 0.5,
+            transformOrigin: "center",
+            immediateRender: false,
+          },
+          0.22,
+        )
+        .from(
+          ".svc-card",
+          {
+            y: 40,
+            opacity: 0,
+            duration: 0.65,
+            stagger: 0.1,
+            immediateRender: false,
+          },
+          0.3,
+        );
+    },
+    { scope: sectionRef },
+  );
 
   return (
     <section
+      ref={sectionRef}
       style={{
         backgroundColor: "#e8ede0",
         padding: isMobile
@@ -274,6 +328,7 @@ export default function ServicesSection() {
         style={{ textAlign: "center", marginBottom: 12, position: "relative" }}
       >
         <p
+          className="svc-eyebrow"
           style={{
             fontFamily: "Georgia, 'Times New Roman', serif",
             fontSize: "0.8rem",
@@ -286,6 +341,7 @@ export default function ServicesSection() {
           What I Offer
         </p>
         <h2
+          className="svc-heading"
           style={{
             fontFamily: "Georgia, 'Times New Roman', serif",
             fontSize: "clamp(2.2rem, 4vw, 3.2rem)",
@@ -302,6 +358,7 @@ export default function ServicesSection() {
 
       {/* Decorative divider */}
       <div
+        className="svc-divider"
         style={{
           display: "flex",
           alignItems: "center",
@@ -346,19 +403,26 @@ export default function ServicesSection() {
         }}
       >
         {services.map((service, i) => (
-          <ServiceCard key={i} service={service} />
+          <ServiceCard key={i} service={service} className="svc-card" />
         ))}
       </div>
     </section>
   );
 }
 
-function ServiceCard({ service }: { service: (typeof services)[0] }) {
+function ServiceCard({
+  service,
+  className,
+}: {
+  service: (typeof services)[0];
+  className?: string;
+}) {
   const [hovered, setHovered] = useState(false);
   const { isMobile } = useBreakpoint();
 
   return (
     <div
+      className={className}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{

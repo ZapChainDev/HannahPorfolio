@@ -3,8 +3,12 @@
 @tailwind utilities;
 
 :root {
-  --background: #e8ede0;
-  --foreground: #4a5a44;
+  --background: #eaede2;
+  --foreground: #3d4d38;
+  --sage-dark: #4a5a44;
+  --sage-mid: #8f9f84;
+  --sage-light: #c5ccb0;
+  --cream: #f5f2ec;
 }
 
 * {
@@ -14,6 +18,7 @@
 html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
+  overflow-x: hidden;
 }
 
 body {
@@ -24,6 +29,21 @@ body {
   padding: 0;
   overflow-x: hidden;
   min-width: 320px;
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Swatch hover lift */
+.hero-swatch:hover {
+  transform: translateY(-4px) scale(1.08);
+  transition: transform 0.22s ease !important;
+  z-index: 10 !important;
+}
+
+/* Selection colour */
+::selection {
+  background: rgba(143, 159, 132, 0.3);
+  color: #3d4d38;
 }
 
 img,
