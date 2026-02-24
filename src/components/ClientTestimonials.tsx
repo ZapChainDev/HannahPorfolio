@@ -215,7 +215,7 @@ export default function ClientTestimonials() {
             >
               {/* Ghost number watermark */}
               <span
-                className="ct-ghost-num absolute top-1/2 -translate-y-1/2 select-none pointer-events-none font-bold leading-none"
+                className="ct-ghost-num absolute top-1/2 -translate-y-1/2 select-none pointer-events-none font-bold leading-none z-0"
                 style={{
                   fontSize: "clamp(8rem,22vw,18rem)",
                   color: isEven ? "#ffffff" : "var(--sage-mid)",
