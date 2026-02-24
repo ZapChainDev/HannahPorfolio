@@ -70,7 +70,7 @@ export default function ClientTestimonials() {
           card.querySelector(".ct-ghost-num"),
           { opacity: 0, x: isEven ? 40 : -40 },
           {
-            opacity: 1,
+            opacity: isEven ? 0.04 : 0.07,
             x: 0,
             duration: 1.2,
             ease: "power3.out",
