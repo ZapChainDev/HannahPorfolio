@@ -163,7 +163,7 @@ export default function Navbar() {
               zIndex: 1,
             }}
           >
-            HS
+            VH
           </span>
         </button>
 

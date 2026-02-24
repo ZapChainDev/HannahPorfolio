@@ -229,7 +229,7 @@ export default function ClientTestimonials() {
               </span>
 
               <div
-                className={`relative max-w-6xl mx-auto px-6 md:px-14 py-16 md:py-24 flex flex-col md:flex-row items-center gap-12 md:gap-16 ${
+                className={`relative z-10 max-w-6xl mx-auto px-6 md:px-14 py-16 md:py-24 flex flex-col md:flex-row items-center gap-12 md:gap-16 ${
                   !isEven ? "md:flex-row-reverse" : ""
                 }`}
               >
