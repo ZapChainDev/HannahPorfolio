@@ -208,11 +208,31 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-6 md:px-14">
         {/* ── BRAND HEADLINE ── */}
         <div className="footer-brand relative pt-16 pb-6 overflow-hidden select-none">
+          {/* Mobile layout: text first, ghost name below */}
+          <div className="md:hidden flex flex-col gap-1 mb-4 pointer-events-none">
+            <p
+              className="text-[10px] tracking-[0.15em] uppercase"
+              style={{ color: "var(--sage-light)", opacity: 0.5 }}
+            >
+              Social Media Management & Strategy
+            </p>
+            <p
+              className="font-light"
+              style={{
+                fontFamily: "Georgia, serif",
+                fontSize: "clamp(0.9rem,4vw,1.2rem)",
+                color: "rgba(255,255,255,0.7)",
+              }}
+            >
+              Elevating brands, one post at a time.
+            </p>
+          </div>
+
           <h2
-            className="leading-none tracking-tighter"
+            className="leading-none tracking-tighter whitespace-nowrap"
             style={{
               fontFamily: "var(--font-heading)",
-              fontSize: "clamp(3.5rem,11vw,10rem)",
+              fontSize: "clamp(1.2rem,7.5vw,8rem)",
               color: "rgba(255,255,255,0.06)",
             }}
             aria-label="Virtually Hana"
@@ -228,8 +248,8 @@ export default function Footer() {
             ))}
           </h2>
 
-          {/* Overlay tagline centered on top of ghost text */}
-          <div className="absolute inset-0 flex flex-col justify-center pl-1 pointer-events-none">
+          {/* Desktop overlay tagline on top of ghost text */}
+          <div className="hidden md:flex absolute inset-0 flex-col justify-center pl-1 pointer-events-none">
             <p
               className="text-xs tracking-[0.4em] uppercase mb-2"
               style={{ color: "var(--sage-light)", opacity: 0.5 }}
@@ -240,7 +260,7 @@ export default function Footer() {
               className="font-light"
               style={{
                 fontFamily: "Georgia, serif",
-                fontSize: "clamp(1.1rem,2.5vw,1.6rem)",
+                fontSize: "clamp(0.9rem,2.5vw,1.6rem)",
                 color: "rgba(255,255,255,0.7)",
               }}
             >

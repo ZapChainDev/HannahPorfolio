@@ -65,11 +65,12 @@ export default function ClientTestimonials() {
         if (!card) return;
         const isEven = i % 2 === 0;
 
-        // Ghost number drifts in (opacity controlled by inline CSS only)
+        // Ghost number drifts in
         gsap.fromTo(
           card.querySelector(".ct-ghost-num"),
-          { x: isEven ? 40 : -40 },
+          { opacity: 0, x: isEven ? 40 : -40 },
           {
+            opacity: 1,
             x: 0,
             duration: 1.2,
             ease: "power3.out",
@@ -205,30 +206,15 @@ export default function ClientTestimonials() {
               ref={(el) => {
                 cardRefs.current[i] = el;
               }}
-              className="relative isolate w-full overflow-hidden"
+              className="relative w-full overflow-hidden"
               style={{
                 backgroundColor: isEven
                   ? "var(--sage-dark)"
                   : "var(--background)",
               }}
             >
-              {/* Ghost number watermark */}
-              <span
-                className="ct-ghost-num absolute top-1/2 -translate-y-1/2 select-none pointer-events-none font-bold leading-none z-0"
-                style={{
-                  fontSize: "clamp(8rem,22vw,18rem)",
-                  color: isEven ? "#ffffff" : "var(--sage-mid)",
-                  opacity: isEven ? 0.04 : 0.07,
-                  right: isEven ? "-0.05em" : undefined,
-                  left: !isEven ? "-0.05em" : undefined,
-                }}
-                aria-hidden
-              >
-                {t.num}
-              </span>
-
               <div
-                className={`relative z-10 max-w-6xl mx-auto px-6 md:px-14 py-16 md:py-24 flex flex-col md:flex-row items-center gap-12 md:gap-16 ${
+                className={`relative max-w-6xl mx-auto px-6 md:px-14 py-16 md:py-24 flex flex-col md:flex-row items-center gap-12 md:gap-16 ${
                   !isEven ? "md:flex-row-reverse" : ""
                 }`}
               >
@@ -287,54 +273,68 @@ export default function ClientTestimonials() {
                     </p>
                   </div>
 
-                  {/* Stars + Author */}
-                  <div className="ct-author flex flex-col gap-3 mt-2">
-                    <div className="flex gap-1">
-                      {Array.from({ length: t.stars }).map((_, si) => (
-                        <svg
-                          key={si}
-                          className="ct-star"
-                          width="18"
-                          height="18"
-                          viewBox="0 0 24 24"
-                          fill={isEven ? "#ffffff" : "var(--sage-dark)"}
-                        >
-                          <path d="M12 2l2.9 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l7.1-1.01L12 2z" />
-                        </svg>
-                      ))}
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <span
-                        className="w-8 h-[1.5px] shrink-0"
-                        style={{
-                          backgroundColor: isEven
-                            ? "rgba(255,255,255,0.4)"
-                            : "var(--sage-mid)",
-                        }}
-                      />
-                      <div>
-                        <p
-                          className="font-semibold text-sm tracking-wide"
+                  {/* Stars + Author + Number */}
+                  <div className="ct-author flex items-end justify-between gap-4 mt-2">
+                    <div className="flex flex-col gap-3">
+                      <div className="flex gap-1">
+                        {Array.from({ length: t.stars }).map((_, si) => (
+                          <svg
+                            key={si}
+                            className="ct-star"
+                            width="18"
+                            height="18"
+                            viewBox="0 0 24 24"
+                            fill={isEven ? "#ffffff" : "var(--sage-dark)"}
+                          >
+                            <path d="M12 2l2.9 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l7.1-1.01L12 2z" />
+                          </svg>
+                        ))}
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span
+                          className="w-8 h-[1.5px] shrink-0"
                           style={{
-                            color: isEven
-                              ? "rgba(255,255,255,0.95)"
-                              : "var(--foreground)",
-                          }}
-                        >
-                          {t.author}
-                        </p>
-                        <p
-                          className="text-xs tracking-wider uppercase mt-0.5"
-                          style={{
-                            color: isEven
-                              ? "rgba(255,255,255,0.45)"
+                            backgroundColor: isEven
+                              ? "rgba(255,255,255,0.4)"
                               : "var(--sage-mid)",
                           }}
-                        >
-                          {t.role}
-                        </p>
+                        />
+                        <div>
+                          <p
+                            className="font-semibold text-sm tracking-wide"
+                            style={{
+                              color: isEven
+                                ? "rgba(255,255,255,0.95)"
+                                : "var(--foreground)",
+                            }}
+                          >
+                            {t.author}
+                          </p>
+                          <p
+                            className="text-xs tracking-wider uppercase mt-0.5"
+                            style={{
+                              color: isEven
+                                ? "rgba(255,255,255,0.45)"
+                                : "var(--sage-mid)",
+                            }}
+                          >
+                            {t.role}
+                          </p>
+                        </div>
                       </div>
                     </div>
+
+                    {/* Large number beside author */}
+                    <span
+                      className="ct-ghost-num select-none pointer-events-none font-bold leading-none"
+                      style={{
+                        fontSize: "clamp(5rem,13vw,10rem)",
+                        color: isEven ? "#ffffff" : "var(--sage-mid)",
+                      }}
+                      aria-hidden
+                    >
+                      {t.num}
+                    </span>
                   </div>
                 </div>
 
