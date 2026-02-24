@@ -192,7 +192,7 @@ export default function BrandingSection() {
                 letterSpacing="3.2"
               >
                 <textPath href="#circle-path">
-                  HANA SINAJONON • HANA SINAJONON •{" "}
+                  VIRTUALLY HANA • VIRTUALLY HANA •{" "}
                 </textPath>
               </text>
             </svg>
@@ -215,7 +215,7 @@ export default function BrandingSection() {
                   letterSpacing: "0.04em",
                 }}
               >
-                HS
+                VH
               </p>
             </div>
           </div>
