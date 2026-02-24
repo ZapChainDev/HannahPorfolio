@@ -65,12 +65,11 @@ export default function ClientTestimonials() {
         if (!card) return;
         const isEven = i % 2 === 0;
 
-        // Ghost number drifts in
+        // Ghost number drifts in (opacity controlled by inline CSS only)
         gsap.fromTo(
           card.querySelector(".ct-ghost-num"),
-          { opacity: 0, x: isEven ? 40 : -40 },
+          { x: isEven ? 40 : -40 },
           {
-            opacity: isEven ? 0.04 : 0.07,
             x: 0,
             duration: 1.2,
             ease: "power3.out",
@@ -206,7 +205,7 @@ export default function ClientTestimonials() {
               ref={(el) => {
                 cardRefs.current[i] = el;
               }}
-              className="relative w-full overflow-hidden"
+              className="relative isolate w-full overflow-hidden"
               style={{
                 backgroundColor: isEven
                   ? "var(--sage-dark)"
