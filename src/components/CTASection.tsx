@@ -9,7 +9,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 gsap.registerPlugin(ScrollTrigger);
 
 const CALENDLY_URL =
-  "https://calendly.com/hello-virtuallyhana-qen7/30min?background_color=f5f2ec&text_color=3d4d38&primary_color=4a5a44&hide_gdpr_banner=1";
+  "https://calendly.com/hanavahub/30min?background_color=f5f2ec&text_color=3d4d38&primary_color=4a5a44&hide_gdpr_banner=1";
 
 export default function CTASection() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -295,7 +295,7 @@ export default function CTASection() {
 
             {/* CTA Button */}
             <a
-              href={`https://calendly.com/hello-virtuallyhana-qen7/30min?month=2026-02`}
+              href={`https://calendly.com/hanavahub/30min?month=2026-02`}
               target="_blank"
               rel="noopener noreferrer"
               className="cta-btn inline-flex items-center gap-3 px-8 py-4 rounded-full font-semibold text-sm tracking-[0.2em] uppercase transition-all duration-300 hover:scale-105 hover:shadow-xl group"
